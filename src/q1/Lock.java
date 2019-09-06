@@ -28,7 +28,7 @@ class TCount implements Runnable {
 	}
 	
 	public void run() {
-		for(int i = 0; i < 1000; i++) {
+		for(int i = 0; i < 10; i++) {
 			l.lock();
 			this.count.inc(1);
 			System.out.println(Thread.currentThread().getId() + ": " + this.count.get());
@@ -39,9 +39,9 @@ class TCount implements Runnable {
 
 
 public class Lock {
-	private boolean flag;
-	private boolean guard;
-	private ArrayList<Thread> queue;
+	private volatile boolean flag;
+	private volatile boolean guard;
+	private volatile ArrayList<Thread> queue;
 	
 	public Lock() {
 		this.flag = false;
@@ -49,37 +49,39 @@ public class Lock {
 		this.queue = new ArrayList<>();
 	}
 	
+	private boolean testAndSetGuard() {
+		boolean initial = this.guard;
+		this.guard = true;
+		return initial;
+	}
 
 	public void lock() {
-		while(this.guard) {
-			this.guard = true;
+		while(testAndSetGuard()) {
 		}
 		
 		if (this.flag) {
 			this.queue.add(Thread.currentThread());
+			this.guard = false;
 			LockSupport.park();
+		} else {
+			this.guard = false;
+			this.flag = true;
 		}
-		
-		this.flag = true;
-		this.guard = false;
 	}
 	
 	public void unlock() {
-		
-		while(this.guard) {
-			this.guard = true;
+		while(testAndSetGuard()) {
 		}
 		
 		if (!this.queue.isEmpty()) {
 			Thread thread = this.queue.get(0);
 			this.queue.remove(0);
-			
 			LockSupport.unpark(thread);
+			this.guard = false;
 		} else {
+			this.guard = false;
 			this.flag = false;
 		}
-		
-		this.guard = false;
 	}
 	
 	public static void main(String[] args) {
@@ -100,18 +102,6 @@ public class Lock {
 		t4.start();
 		t5.start();
 		t6.start();
-		
-		try {
-			t1.join();
-			t2.join();
-			t3.join();
-			t4.join();
-			t5.join();
-			t6.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 	}
 }
