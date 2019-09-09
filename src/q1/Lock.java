@@ -28,12 +28,12 @@ class TCount implements Runnable {
 	}
 	
 	public void run() {
+		l.lock();
 		for(int i = 0; i < 10; i++) {
-			l.lock();
 			this.count.inc(1);
 			System.out.println(Thread.currentThread().getId() + ": " + this.count.get());
-			l.unlock();
 		}
+		l.unlock();
 	}
 }
 
