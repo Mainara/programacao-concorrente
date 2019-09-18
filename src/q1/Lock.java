@@ -1,6 +1,7 @@
 package q1;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
 
 
@@ -28,59 +29,52 @@ class TCount implements Runnable {
 	}
 	
 	public void run() {
-		l.lock();
-		for(int i = 0; i < 10; i++) {
+		for(int i = 0; i < 1000; i++) {
+			l.lock();
 			this.count.inc(1);
 			System.out.println(Thread.currentThread().getId() + ": " + this.count.get());
+			l.unlock();
 		}
-		l.unlock();
 	}
 }
 
 
 public class Lock {
-	private volatile boolean flag;
-	private volatile boolean guard;
+	private volatile AtomicBoolean flag;
+	private volatile AtomicBoolean guard;
 	private volatile ArrayList<Thread> queue;
 	
 	public Lock() {
-		this.flag = false;
-		this.guard = false;
+		this.flag = new AtomicBoolean(false);
+		this.guard = new AtomicBoolean(false);
 		this.queue = new ArrayList<>();
-	}
-	
-	private boolean testAndSetGuard() {
-		boolean initial = this.guard;
-		this.guard = true;
-		return initial;
 	}
 
 	public void lock() {
-		while(testAndSetGuard()) {
+		while(this.guard.getAndSet(true)) {
 		}
 		
-		if (this.flag) {
+		if (this.flag.getAndSet(true)) {
 			this.queue.add(Thread.currentThread());
-			this.guard = false;
+			this.guard.getAndSet(false);
 			LockSupport.park();
 		} else {
-			this.guard = false;
-			this.flag = true;
+			this.guard.getAndSet(false);
 		}
 	}
 	
 	public void unlock() {
-		while(testAndSetGuard()) {
+		while(this.guard.getAndSet(true)) {
 		}
 		
 		if (!this.queue.isEmpty()) {
 			Thread thread = this.queue.get(0);
 			this.queue.remove(0);
+			this.guard.getAndSet(false);
 			LockSupport.unpark(thread);
-			this.guard = false;
 		} else {
-			this.guard = false;
-			this.flag = false;
+			this.flag.getAndSet(false);
+			this.guard.getAndSet(false);
 		}
 	}
 	
