@@ -1,6 +1,5 @@
 package q2;
 
-import java.util.concurrent.CountDownLatch; 
 
 public class CountDownLatchPC
 { 
@@ -24,8 +23,8 @@ public class CountDownLatchPC
 	public synchronized void countDown() {
 		--this.threadNum;
 		
-		if (this.threadNum == 0) {
-			notify();
+		if (this.threadNum <= 0) {
+			notifyAll();
 		}
 	}
 	
