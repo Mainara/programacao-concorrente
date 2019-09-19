@@ -6,9 +6,10 @@
 
 
 int main (int argc, char *argv[]) {
- 	int status;
+    int status;
+    int samples = atoi(argv[1]);
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < samples; i++) {
         if(fork() == 0) {
             exit(0);
         } else

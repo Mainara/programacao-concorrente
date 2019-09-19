@@ -12,7 +12,9 @@ public class CountDownLatchPC
 	
 	public synchronized void await() {
 		try {
-			wait();
+			if (this.threadNum > 0) {
+				wait();
+			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -40,11 +42,11 @@ public class CountDownLatchPC
         // threads and start them. 
         Worker first = new Worker(1000, latch,  
                                   "WORKER-1"); 
-        Worker second = new Worker(2000, latch,  
+        Worker second = new Worker(1000, latch,  
                                   "WORKER-2"); 
-        Worker third = new Worker(3000, latch,  
+        Worker third = new Worker(1000, latch,  
                                   "WORKER-3"); 
-        Worker fourth = new Worker(4000, latch,  
+        Worker fourth = new Worker(1000, latch,  
                                   "WORKER-4"); 
         first.start(); 
         second.start(); 
@@ -80,10 +82,10 @@ class Worker extends Thread
     { 
         try
         { 
-            Thread.sleep(delay); 
-            latch.countDown();
+            Thread.sleep(delay);
             System.out.println(Thread.currentThread().getName() 
-                            + " finished"); 
+                    + " finished"); 
+            latch.countDown();
         } 
         catch (InterruptedException e) 
         { 
