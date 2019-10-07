@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <time.h>
 
 //shared variable
 long count = 0;
@@ -26,12 +27,18 @@ int main (int argc, char *argv[]) {
 	get_memory_usage();
 	//declare threads
 	pthread_t threads[samples];
+	clock_t start, end;
+     	double cpu_time_used;
 
 	//create threads. we do not change attributes, so NULL
 	//last arg will be passed as parameter to the inc_count funcion
+	start = clock();
 	for (int k = 0; k < samples; k++) {
 		pthread_create(&threads[k], NULL, inc_count, NULL);
 	}
+	end = clock();
+	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+	printf("Time: %f\n", cpu_time_used);
 
 	//wait for thread termination
 	for (i=0; i<samples; i++) {
