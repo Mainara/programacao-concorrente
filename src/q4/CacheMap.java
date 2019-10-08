@@ -25,20 +25,16 @@ public class CacheMap<k, v> {
 	}
 	
 	private void clearCacheAfterTimeout() {
-		Thread t = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
+		Thread t = new Thread(() -> {
 				
-				while (true) {
-					try {
-						Thread.sleep(timeoutSecs*1000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					
-					moveCacheToMap();
+			while (true) {
+				try {
+					Thread.sleep(timeoutSecs*1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
+				
+				moveCacheToMap();
 			}
 		});
 		
