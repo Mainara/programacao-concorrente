@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <time.h>
 
 
 long get_memory_usage(int proc) {
@@ -21,6 +22,10 @@ int main (int argc, char *argv[]) {
     long sum = 0;
     sum += get_memory_usage(RUSAGE_SELF);
 
+    //time variables
+    clock_t start, end;
+    double cpu_time_used;
+    start = clock();
     for (int i = 0; i < samples; i++) {
         if(fork() == 0) {
             exit(0);
@@ -30,7 +35,11 @@ int main (int argc, char *argv[]) {
             wait(&status);
         }
     }
+    end = clock();
+    //compute time
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("%f\n", cpu_time_used);
 
     get_memory_usage(RUSAGE_SELF);
-    printf("sum: %ld\n", sum);
+    //printf("sum: %ld\n", sum);
 }

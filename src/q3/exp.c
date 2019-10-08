@@ -18,7 +18,7 @@ void get_memory_usage() {
 	struct rusage r_usage;
 	getrusage(RUSAGE_SELF, &r_usage);
 
-	printf("Memory: %ld\n", r_usage.ru_maxrss);
+	//printf("Memory: %ld\n", r_usage.ru_maxrss);
 }
 
 int main (int argc, char *argv[]) {
@@ -27,6 +27,8 @@ int main (int argc, char *argv[]) {
 	get_memory_usage();
 	//declare threads
 	pthread_t threads[samples];
+
+	//time variables
 	clock_t start, end;
      	double cpu_time_used;
 
@@ -37,8 +39,9 @@ int main (int argc, char *argv[]) {
 		pthread_create(&threads[k], NULL, inc_count, NULL);
 	}
 	end = clock();
+	//compute time
 	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("Time: %f\n", cpu_time_used);
+	printf("%f\n", cpu_time_used);
 
 	//wait for thread termination
 	for (i=0; i<samples; i++) {
