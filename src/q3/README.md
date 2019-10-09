@@ -1,15 +1,11 @@
-# Questão 3 
+### 3.  (exp) Threads, processos leves. Escreve dois programas em clang. O primeiro, cria N threads e em seguida, executa join para cada um delas. Cada thread deve simplesmente dormir por um tempo (alguns segundos), e em seguida executar thread_exit(0). Faça um segundo programa, equivalente ao anterior, que cria N processos, que dormem por um tempo determinado, e os esperar terminar. Avalie as diferenças de desempenho, tanto em tempo decorrido para executar as operações importantes), quanto no consumo de memória. 
+Critérios que serão usados na avaliação:
+-   explicação da metodologia experimental
+-   corretude dos resultados obtidos
+-   discussão dos resultados obtidos
 
-# Ideia do experimento:
+Nesse experimento criamos os scripts _exp.c_ e _exp2.c_, o primeiro é responsável por criar N Threads (parâmetro passado para o script), colocá-las para dormir e executar _thread_exit(0)_, e o segundo é similar ao primeiro, porém, são criados processos no lugar de Threads. O tempo para a criação das Threads e dos processos foi calculado utilizando a função _clock()_ da biblioteca _time.h_.
 
-# Funcionamento:
+A execução do experimento foi automatizada através do script _build.sh_, ele executa os experimentos variando N de 100 até 1000 (com um intervalo de 100), salva os dados em um arquivo csv e por fim executa um script em R para a geração do plot. Os resultados são salvos na pasta _/results_. 
 
-
-## - Plots de resultados obtidos
-![result]([https://github.com/Mainara/programacao-concorrente/blob/master/src/q3/plots/results/result.png](https://github.com/Mainara/programacao-concorrente/blob/master/src/q3/plots/results/result.png))
-
-
-----------
-
-# Discussão dos resultados obtidos
-
+De acordo com os resultados obtidos, fica claro que ao aumentar a variável N, o tempo da criação dos processos são bem maiores do que o tempo de criação das Threads. 
