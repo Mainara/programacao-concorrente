@@ -11,20 +11,15 @@
 long count = 0;
 
 void *inc_count(void *t) {
+	clock_t start = (clock_t) t;
+	clock_t end = clock();
+	printf("%ld\n", end - start);
  	pthread_exit(NULL);
-}
-
-void get_memory_usage() {
-	struct rusage r_usage;
-	getrusage(RUSAGE_SELF, &r_usage);
-
-	//printf("Memory: %ld\n", r_usage.ru_maxrss);
 }
 
 int main (int argc, char *argv[]) {
 	int i;
 	int samples = atoi(argv[1]);
-	get_memory_usage();
 	//declare threads
 	pthread_t threads[samples];
 
@@ -36,12 +31,12 @@ int main (int argc, char *argv[]) {
 	//last arg will be passed as parameter to the inc_count funcion
 	start = clock();
 	for (int k = 0; k < samples; k++) {
-		pthread_create(&threads[k], NULL, inc_count, NULL);
+		pthread_create(&threads[k], NULL, inc_count, (void*) start);
 	}
 	end = clock();
 	//compute time
 	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("%f\n", cpu_time_used);
+	//printf("%f\n", cpu_time_used);
 
 	//wait for thread termination
 	for (i=0; i<samples; i++) {
@@ -49,6 +44,5 @@ int main (int argc, char *argv[]) {
 
 	}
 
-	get_memory_usage();
 	return 0;
 }
