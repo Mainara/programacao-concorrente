@@ -7,13 +7,18 @@
 #include <sys/resource.h>
 #include <time.h>
 
-//shared variable
-long count = 0;
+struct exp
+{
+	clock_t start;
+	int sample;
+};
+
 
 void *inc_count(void *t) {
-	clock_t start = (clock_t) t;
+	struct exp *tst = (struct exp *) t;
 	clock_t end = clock();
-	printf("%ld\n", end - start);
+	sleep(1);
+	printf("Thread,%d,%f\n",tst->sample, ((double)end - (double)tst->start)/CLOCKS_PER_SEC);
  	pthread_exit(NULL);
 }
 
@@ -22,21 +27,21 @@ int main (int argc, char *argv[]) {
 	int samples = atoi(argv[1]);
 	//declare threads
 	pthread_t threads[samples];
+	struct exp example;
+	
+	
 
 	//time variables
-	clock_t start, end;
-     	double cpu_time_used;
+	clock_t start;
 
 	//create threads. we do not change attributes, so NULL
 	//last arg will be passed as parameter to the inc_count funcion
 	start = clock();
+	example.start = start;
+	example.sample = samples;
 	for (int k = 0; k < samples; k++) {
-		pthread_create(&threads[k], NULL, inc_count, (void*) start);
+		pthread_create(&threads[k], NULL, inc_count, (void*) &example);
 	}
-	end = clock();
-	//compute time
-	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-	//printf("%f\n", cpu_time_used);
 
 	//wait for thread termination
 	for (i=0; i<samples; i++) {

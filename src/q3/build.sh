@@ -16,7 +16,7 @@ echo "structure,usage,sample" > results/result_men.csv;
 
 function getMemoryUsage() {
 	while [ 0 ] ; do
-		sleep 0.3;
+		sleep 0.2;
 		sum=$(ps av | grep "./bin/$1" | awk '{sum+=$8}END{print sum}');
 		echo "$2,$sum,$3" >> results/result_men.csv
 	done
@@ -33,7 +33,7 @@ for i in {100..10000..100}; do
 	getMemoryUsage "exp" "Thread" $i &
 	pid=$!;
 	thread_time=$(./bin/exp $i 2>&1);
-	echo "Thread,$thread_time,$i" >> results/result.csv;
+	echo "$thread_time" >> results/result.csv;
 	kill $pid 12> /dev/null;
 done;
 
