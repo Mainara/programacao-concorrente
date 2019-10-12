@@ -9,16 +9,22 @@
 
 struct exp
 {
-	clock_t start;
+	long int start;
 	int sample;
 };
+
+typedef struct {
+  long tv_sec;
+  long tv_usec;
+} timeval;
 
 
 void *inc_count(void *t) {
 	struct exp *tst = (struct exp *) t;
-	clock_t end = clock();
+	timeval end;
+	gettimeofday(&end, NULL);
 	sleep(1);
-	printf("Thread,%d,%f\n",tst->sample, ((double)end - (double)tst->start)/CLOCKS_PER_SEC);
+	printf("Thread,%ld,%d\n", (end.tv_sec*1000+end.tv_usec) - tst->start, tst->sample);
  	pthread_exit(NULL);
 }
 
@@ -28,16 +34,15 @@ int main (int argc, char *argv[]) {
 	//declare threads
 	pthread_t threads[samples];
 	struct exp example;
-	
-	
 
 	//time variables
-	clock_t start;
+	timeval start;
 
 	//create threads. we do not change attributes, so NULL
 	//last arg will be passed as parameter to the inc_count funcion
-	start = clock();
-	example.start = start;
+    gettimeofday(&start, NULL);
+
+	example.start = start.tv_sec*1000 + start.tv_usec;
 	example.sample = samples;
 	for (int k = 0; k < samples; k++) {
 		pthread_create(&threads[k], NULL, inc_count, (void*) &example);

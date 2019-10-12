@@ -12,12 +12,18 @@ int main (int argc, char *argv[]) {
     int samples = atoi(argv[1]);;
 
     //time variables
-    clock_t end;
+    struct timeval *time;
+
+    gettimeofday(time, NULL);
+    
+    long int start,end; 
+    start = time->tv_sec*1000 + time->tv_usec;
+
     for (int i = 0; i < samples; i++) {
         if(fork() == 0) {
-            end = clock();
+            gettimeofday(time, NULL);
             sleep(1);
-            printf("Process,%d,%f\n", samples, (double)end/CLOCKS_PER_SEC);
+            printf("Process,%ld,%d\n", (time->tv_sec*1000 + time->tv_usec) - start, samples);
             exit(0);
         }
     }

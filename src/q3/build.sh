@@ -8,33 +8,31 @@ if [ ! -d "results" ]; then
 	mkdir results;
 fi
 
-gcc -pthread -o bin/exp exp.c;
-gcc exp2.c -o bin/exp2;
+gcc -pthread -o bin/exp exp.c --no-warnings;
+gcc exp2.c -o bin/exp2 --no-warnings;
 
 echo "structure,time,sample" > results/result.csv;
 echo "structure,usage,sample" > results/result_men.csv;
 
 function getMemoryUsage() {
-	while [ 0 ] ; do
-		sleep 0.2;
+	i=0
+	while [ $i -lt 10 ] ; do
+		sleep 0.1;
 		sum=$(ps av | grep "./bin/$1" | awk '{sum+=$8}END{print sum}');
 		echo "$2,$sum,$3" >> results/result_men.csv
+		i=$(($i + 1));
 	done
 }
 
 
 for i in {100..10000..100}; do
 	getMemoryUsage "exp2" "Process" $i &
-	pid=$!;
-	proc_time=$(./bin/exp2 $i 2>&1);
-	echo "Process,$proc_time,$i" >> results/result.csv;
-	kill $pid 12> /dev/null;
+	proc_time=$(./bin/exp2 $i | head -n 10);
+	echo "$proc_time" >> results/result.csv;
 
 	getMemoryUsage "exp" "Thread" $i &
-	pid=$!;
-	thread_time=$(./bin/exp $i 2>&1);
+	thread_time=$(./bin/exp $i | head -n 10);
 	echo "$thread_time" >> results/result.csv;
-	kill $pid 12> /dev/null;
 done;
 
 
