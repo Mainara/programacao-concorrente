@@ -9,3 +9,21 @@ Nesse experimento criamos os scripts _exp.c_ e _exp2.c_, o primeiro é responsá
 A execução do experimento foi automatizada através do script _build.sh_, ele executa os experimentos variando N de 100 até 1000 (com um intervalo de 100), salva os dados em um arquivo csv e por fim executa um script em R para a geração do plot. Os resultados são salvos na pasta _/results_. 
 
 De acordo com os resultados obtidos, fica claro que ao aumentar a variável N, o tempo da criação dos processos são bem maiores do que o tempo de criação das Threads. 
+
+
+# Resultados obtidos
+
+## Memoria 
+![tempo](https://drive.google.com/uc?export=view&id=1POh5mhCSllYfB3_HqOIveQHAMxEcfHfH)
+
+A cada 0.1 segundos analisamos quanto de memória o processo está consumindo.
+
+## Tempo
+![tempo](https://drive.google.com/uc?export=view&id=1x7Fau0fAUy_VvoQexEqo0CVTNWwefUz1)
+
+Obtivemos os dados a partir da subtração do timestamp final assim que termina de criar menos o inicial antes da criação da thread ou processo e assim pegando esse valor.
+
+
+## Conclusão
+
+Em memória temos aspectos semelhantes para ambas as estruturas, já se tratando de tempo as threads foram mais custosas. Esses resultados, foi bastante curioso para o experimento e um pouco diferente das expectativas que tínhamos sobre essas estruturas.
